@@ -2,6 +2,7 @@ import os
 import argparse
 from fpdf import FPDF
 from PIL import Image
+from tqdm import tqdm
 
 
 class PDF(FPDF):
@@ -29,7 +30,7 @@ def png_to_pdf(input_folder='.', pdf_filename='output.pdf', verso_image=None):
         print("No PNG files found in the specified directory.")
         return
 
-    for png_file in png_files:
+    for png_file in tqdm(png_files, desc="Processing images"):
         pdf.add_page_with_image(os.path.join(input_folder, png_file))
         if verso_image:
             pdf.add_page_with_image(verso_image)
@@ -46,6 +47,7 @@ def test_images_to_pdf():
         png_to_pdf(test_folder, test_output, verso_image)
         if os.path.exists(test_output):
             os.remove(test_output)
+            print(f"PDF removed after test: {test_output}")
             print("ImagesToPDF test has succeeded!")
         else:
             print("ImagesToPDF test has failed!")
