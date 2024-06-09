@@ -33,16 +33,16 @@ python main.py [options]
 
 ## Example
 
-To generate a PDF from PNG images in the images folder and save it as my_document.pdf, you would use:
+To generate a PDF from PNG images in the `my_images` folder and save it as my_document.pdf, you would use:
 
 ```
-python main.py -i images -o my_document.pdf
+python main.py -i my_images -o my_document.pdf
 ```
 
-To include a verso image named verso.png in the images folder:
+To include a verso image named verso.png in the `my_images` folder:
 
 ```
-python main.py -i images -o my_document.pdf -v images/verso.png
+python main.py -i "my_images" -o "my_documents.pdf" -v "my_images/verso.png"
 ```
 
 To run the test function:
