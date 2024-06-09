@@ -1,4 +1,5 @@
 import os
+import argparse
 from fpdf import FPDF
 from PIL import Image
 
@@ -19,20 +20,54 @@ class PDF(FPDF):
         self.image(image_path, x=0, y=0, w=new_width, h=new_height)
 
 
-def png_to_pdf(pdf_filename='output.pdf'):
+def png_to_pdf(input_folder='.', pdf_filename='output.pdf', verso_image=None):
     pdf = PDF()
-    png_files = [f for f in os.listdir('.') if f.endswith('.png')]
+    png_files = [f for f in os.listdir(input_folder) if f.endswith(
+        '.png') and f != os.path.basename(verso_image)]
 
     if not png_files:
-        print("No PNG files found in the current directory.")
+        print("No PNG files found in the specified directory.")
         return
 
     for png_file in png_files:
-        pdf.add_page_with_image(png_file)
+        pdf.add_page_with_image(os.path.join(input_folder, png_file))
+        if verso_image:
+            pdf.add_page_with_image(verso_image)
 
     pdf.output(pdf_filename)
     print(f"PDF created successfully: {pdf_filename}")
 
 
+def test_images_to_pdf():
+    test_folder = 'test'
+    test_output = 'test_output.pdf'
+    verso_image = os.path.join(test_folder, 'verso.png')
+    try:
+        png_to_pdf(test_folder, test_output, verso_image)
+        if os.path.exists(test_output):
+            os.remove(test_output)
+            print("ImagesToPDF test has succeeded!")
+        else:
+            print("ImagesToPDF test has failed!")
+    except Exception as e:
+        print(f"ImagesToPDF test has failed! Error: {e}")
+
+
 if __name__ == '__main__':
-    png_to_pdf()
+    parser = argparse.ArgumentParser(
+        description='Generate a PDF from PNG images.')
+    parser.add_argument('-i', '--input', type=str, default='.',
+                        help='Path of the input folder containing pictures (default: current folder)')
+    parser.add_argument('-o', '--output', type=str, default='output.pdf',
+                        help='Path of the output generated PDF (default: ./output.pdf)')
+    parser.add_argument('-v', '--verso', type=str,
+                        help='Path of an image to add after each PNG (verso)')
+    parser.add_argument('-t', '--test', action='store_true',
+                        help='Run a test to create a PDF from images in the test folder')
+
+    args = parser.parse_args()
+
+    if args.test:
+        test_images_to_pdf()
+    else:
+        png_to_pdf(args.input, args.output, args.verso)
