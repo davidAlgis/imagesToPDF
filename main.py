@@ -23,8 +23,12 @@ class PDF(FPDF):
 
 def png_to_pdf(input_folder='.', pdf_filename='output.pdf', verso_image=None):
     pdf = PDF()
-    png_files = [f for f in os.listdir(input_folder) if f.endswith(
-        '.png') and f != os.path.basename(verso_image)]
+    if verso_image == None:
+        png_files = [f for f in os.listdir(input_folder) if f.endswith(
+            '.png')]
+    else:
+        png_files = [f for f in os.listdir(input_folder) if f.endswith(
+            '.png') and f != os.path.basename(verso_image)]
 
     if not png_files:
         print("No PNG files found in the specified directory.")
