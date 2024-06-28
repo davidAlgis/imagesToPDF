@@ -3,4 +3,3 @@ Pillow
 argparse
 tqdm
 PyPDF2
-io
