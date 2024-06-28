@@ -43,6 +43,37 @@ def png_to_pdf(input_folder='.', pdf_filename='output.pdf', verso_image=None):
     print(f"PDF created successfully: {pdf_filename}")
 
 
+def merge_pdfs_and_images(input_folder='.', output_filename='merged.pdf', verso_image=None):
+    pdf_files = [f for f in os.listdir(input_folder) if f.endswith('.pdf')]
+    png_files = [f for f in os.listdir(input_folder) if f.endswith(
+        '.png') and f != os.path.basename(verso_image)]
+
+    if not pdf_files and not png_files:
+        print("No PDF or PNG files found in the specified directory.")
+        return
+
+    merger = PyPDF2.PdfFileMerger()
+    pdf = PDF()
+
+    for png_file in tqdm(png_files, desc="Processing images"):
+        pdf.add_page_with_image(os.path.join(input_folder, png_file))
+        if verso_image:
+            pdf.add_page_with_image(verso_image)
+
+    if pdf_files:
+        for pdf_file in tqdm(pdf_files, desc="Merging PDFs"):
+            merger.append(os.path.join(input_folder, pdf_file))
+
+    if png_files:
+        pdf_bytes = pdf.output(dest='S').encode('latin-1')
+        pdf_reader = PyPDF2.PdfFileReader(io.BytesIO(pdf_bytes))
+        for page in range(pdf_reader.getNumPages()):
+            merger.append(pdf_reader, page)
+
+    merger.write(output_filename)
+    print(f"PDFs and images merged successfully: {output_filename}")
+
+
 def test_images_to_pdf():
     test_folder = 'test'
     test_output = 'test_output.pdf'
@@ -61,9 +92,9 @@ def test_images_to_pdf():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Generate a PDF from PNG images.')
+        description='Generate a PDF from PNG images and merge with existing PDFs.')
     parser.add_argument('-i', '--input', type=str, default='.',
-                        help='Path of the input folder containing pictures (default: current folder)')
+                        help='Path of the input folder containing pictures or PDFs (default: current folder)')
     parser.add_argument('-o', '--output', type=str, default='output.pdf',
                         help='Path of the output generated PDF (default: ./output.pdf)')
     parser.add_argument('-v', '--verso', type=str,
@@ -76,4 +107,4 @@ if __name__ == '__main__':
     if args.test:
         test_images_to_pdf()
     else:
-        png_to_pdf(args.input, args.output, args.verso)
+        merge_pdfs_and_images(args.input, args.output, args.verso)
