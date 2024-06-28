@@ -3,6 +3,8 @@ import argparse
 from fpdf import FPDF
 from PIL import Image
 from tqdm import tqdm
+import PyPDF2  # Make sure this line is included
+import io
 
 
 class PDF(FPDF):
@@ -45,30 +47,34 @@ def png_to_pdf(input_folder='.', pdf_filename='output.pdf', verso_image=None):
 
 def merge_pdfs_and_images(input_folder='.', output_filename='merged.pdf', verso_image=None):
     pdf_files = [f for f in os.listdir(input_folder) if f.endswith('.pdf')]
-    png_files = [f for f in os.listdir(input_folder) if f.endswith(
-        '.png') and f != os.path.basename(verso_image)]
-
+    if verso_image:
+        png_files = [f for f in os.listdir(input_folder) if f.endswith(
+            '.png') and f != os.path.basename(verso_image)]
+    else:
+        png_files = [f for f in os.listdir(input_folder) if f.endswith('.png')]
     if not pdf_files and not png_files:
         print("No PDF or PNG files found in the specified directory.")
         return
 
-    merger = PyPDF2.PdfFileMerger()
-    pdf = PDF()
+    merger = PyPDF2.PdfMerger()
 
-    for png_file in tqdm(png_files, desc="Processing images"):
-        pdf.add_page_with_image(os.path.join(input_folder, png_file))
-        if verso_image:
-            pdf.add_page_with_image(verso_image)
+    if png_files:
+        pdf = PDF()
+        for png_file in tqdm(png_files, desc="Processing images"):
+            print(len(png_files))
+            pdf.add_page_with_image(os.path.join(input_folder, png_file))
+            print("add")
+            if verso_image:
+                pdf.add_page_with_image(verso_image)
+
+        pdf_bytes = pdf.output()
+        pdf_bytes = bytes(pdf_bytes)
+        pdf_reader = PyPDF2.PdfReader(io.BytesIO(pdf_bytes))
+        merger.append(pdf_reader)
 
     if pdf_files:
         for pdf_file in tqdm(pdf_files, desc="Merging PDFs"):
             merger.append(os.path.join(input_folder, pdf_file))
-
-    if png_files:
-        pdf_bytes = pdf.output(dest='S').encode('latin-1')
-        pdf_reader = PyPDF2.PdfFileReader(io.BytesIO(pdf_bytes))
-        for page in range(pdf_reader.getNumPages()):
-            merger.append(pdf_reader, page)
 
     merger.write(output_filename)
     print(f"PDFs and images merged successfully: {output_filename}")

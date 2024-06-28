@@ -2,3 +2,5 @@ fpdf2
 Pillow
 argparse
 tqdm
+PyPDF2
+io
