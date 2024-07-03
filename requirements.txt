@@ -3,3 +3,4 @@ Pillow
 argparse
 tqdm
 PyPDF2
+psd_tools
