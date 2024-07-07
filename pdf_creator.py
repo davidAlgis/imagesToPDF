@@ -3,6 +3,8 @@ from psd_to_png import convert_psd_to_png
 from png_to_pdf import png_to_pdf
 from pdf_merger import merge_pdfs
 from tqdm import tqdm
+import shutil
+
 
 def create_pdf(input_folder, output_pdf, verso_image=None, split=False):
     os.makedirs("temp_png", exist_ok=True)
@@ -15,7 +17,14 @@ def create_pdf(input_folder, output_pdf, verso_image=None, split=False):
     # Convert PNG to PDF
     png_files = [f for f in os.listdir(input_folder) if f.endswith('.png')]
     for png_file in tqdm(png_files, desc="Converting PNG to PDF"):
-        png_to_pdf(os.path.join(input_folder, png_file), os.path.join("temp_pdf", f"{os.path.splitext(png_file)[0]}.pdf"), verso_image, split)
+        png_to_pdf(os.path.join(input_folder, png_file), os.path.join(
+            "temp_pdf", f"{os.path.splitext(png_file)[0]}.pdf"), verso_image, split)
+
+    # Copy existing PDFs to temp_pdf folder
+    pdf_files = [f for f in os.listdir(input_folder) if f.endswith('.pdf')]
+    for pdf_file in tqdm(pdf_files, desc="Copying existing PDFs"):
+        shutil.copy(os.path.join(input_folder, pdf_file),
+                    os.path.join("temp_pdf", pdf_file))
 
     # Merge PDFs
     merge_pdfs("temp_pdf", output_pdf)
