@@ -27,8 +27,6 @@ if __name__ == '__main__':
                         help='Path of an image to add after each PNG or PSD (verso)')
     parser.add_argument('-s', '--split', type=str2bool, default=False,
                         help='Split each page in the PDF into two along the width (default is False)')
-    parser.add_argument('-t', '--test', action='store_true',
-                        help='Run a test to create a PDF from images in the test folder')
 
     args = parser.parse_args()
 
