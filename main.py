@@ -26,7 +26,7 @@ if __name__ == '__main__':
         type=str,
         default='.',
         help=
-        'Path of the input folder containing pictures or PDFs (default: current folder)'
+        'Path of the input folder or file containing pictures or PDFs (default: current folder)'
     )
     parser.add_argument(
         '-o',

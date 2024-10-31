@@ -1,34 +1,64 @@
 import os
 from psd_to_png import convert_psd_to_png
-from png_to_pdf import png_to_pdf
+from picture_to_pdf import picture_to_pdf
 from pdf_merger import merge_pdfs
 from tqdm import tqdm
 import shutil
 
 
-def create_pdf(input_folder, output_pdf, verso_image=None, split=False):
+def create_pdf(input_path, output_pdf, verso_image=None, split=False):
+    # Create temporary directories
     os.makedirs("temp_png", exist_ok=True)
     os.makedirs("temp_pdf", exist_ok=True)
 
-    # Convert PSD to PNG
-    for psd_file in tqdm(
-        [f for f in os.listdir(input_folder) if f.endswith('.psd')],
-            desc="Converting PSD to PNG"):
-        convert_psd_to_png(os.path.join(input_folder, psd_file))
+    # Check if input_path is a file or a directory
+    if os.path.isfile(input_path):
+        file_ext = os.path.splitext(input_path)[1].lower()
+        # If it's a PSD file, convert it to PNG
+        if file_ext == '.psd':
+            png_file = convert_psd_to_png(input_path)
+            picture_to_pdf(
+                png_file,
+                os.path.join(
+                    "temp_pdf",
+                    f"{os.path.splitext(os.path.basename(png_file))[0]}.pdf"),
+                verso_image, split)
+        # If it's a PNG file, convert directly to PDF
+        elif file_ext == '.png':
+            picture_to_pdf(
+                input_path,
+                os.path.join(
+                    "temp_pdf",
+                    f"{os.path.splitext(os.path.basename(input_path))[0]}.pdf"
+                ), verso_image, split)
+        # If it's a PDF file, copy it to the temp_pdf folder
+        elif file_ext == '.pdf':
+            shutil.copy(input_path,
+                        os.path.join("temp_pdf", os.path.basename(input_path)))
+        else:
+            print(
+                "Unsupported file format. Please provide a PNG, PSD, or PDF file."
+            )
+            return
+    else:
+        # Process as a directory
+        for psd_file in tqdm(
+            [f for f in os.listdir(input_path) if f.endswith('.psd')],
+                desc="Converting PSD to PNG"):
+            convert_psd_to_png(os.path.join(input_path, psd_file))
 
-    # Convert PNG to PDF
-    png_files = [f for f in os.listdir(input_folder) if f.endswith('.png')]
-    for png_file in tqdm(png_files, desc="Converting PNG to PDF"):
-        png_to_pdf(
-            os.path.join(input_folder, png_file),
-            os.path.join("temp_pdf", f"{os.path.splitext(png_file)[0]}.pdf"),
-            verso_image, split)
+        png_files = [f for f in os.listdir(input_path) if f.endswith('.png')]
+        for png_file in tqdm(png_files, desc="Converting PNG to PDF"):
+            picture_to_pdf(
+                os.path.join(input_path, png_file),
+                os.path.join("temp_pdf",
+                             f"{os.path.splitext(png_file)[0]}.pdf"),
+                verso_image, split)
 
-    # Copy existing PDFs to temp_pdf folder
-    pdf_files = [f for f in os.listdir(input_folder) if f.endswith('.pdf')]
-    for pdf_file in tqdm(pdf_files, desc="Copying existing PDFs"):
-        shutil.copy(os.path.join(input_folder, pdf_file),
-                    os.path.join("temp_pdf", pdf_file))
+        pdf_files = [f for f in os.listdir(input_path) if f.endswith('.pdf')]
+        for pdf_file in tqdm(pdf_files, desc="Copying existing PDFs"):
+            shutil.copy(os.path.join(input_path, pdf_file),
+                        os.path.join("temp_pdf", pdf_file))
 
     # Merge PDFs
     merge_pdfs("temp_pdf", output_pdf)
