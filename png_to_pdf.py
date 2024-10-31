@@ -4,6 +4,7 @@ from PIL import Image
 
 
 class PDF(FPDF):
+
     def __init__(self, orientation='P', unit='mm', format='A4'):
         super().__init__(orientation, unit, format)
         self.set_auto_page_break(0)

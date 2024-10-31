@@ -18,15 +18,35 @@ def str2bool(v):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Generate a PDF from PNG and PSD images and merge with existing PDFs.')
-    parser.add_argument('-i', '--input', type=str, default='.',
-                        help='Path of the input folder containing pictures or PDFs (default: current folder)')
-    parser.add_argument('-o', '--output', type=str, default='output.pdf',
-                        help='Path of the output generated PDF (default: ./output.pdf)')
-    parser.add_argument('-v', '--verso', type=str,
-                        help='Path of an image to add after each PNG or PSD (verso)')
-    parser.add_argument('-s', '--split', type=str2bool, default=False,
-                        help='Split each page in the PDF into two along the width (default is False)')
+        description=
+        'Generate a PDF from PNG and PSD images and merge with existing PDFs.')
+    parser.add_argument(
+        '-i',
+        '--input',
+        type=str,
+        default='.',
+        help=
+        'Path of the input folder containing pictures or PDFs (default: current folder)'
+    )
+    parser.add_argument(
+        '-o',
+        '--output',
+        type=str,
+        default='output.pdf',
+        help='Path of the output generated PDF (default: ./output.pdf)')
+    parser.add_argument(
+        '-v',
+        '--verso',
+        type=str,
+        help='Path of an image to add after each PNG or PSD (verso)')
+    parser.add_argument(
+        '-s',
+        '--split',
+        type=str2bool,
+        default=False,
+        help=
+        'Split each page in the PDF into two along the width (default is False)'
+    )
 
     args = parser.parse_args()
 

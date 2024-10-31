@@ -11,14 +11,18 @@ def create_pdf(input_folder, output_pdf, verso_image=None, split=False):
     os.makedirs("temp_pdf", exist_ok=True)
 
     # Convert PSD to PNG
-    for psd_file in tqdm([f for f in os.listdir(input_folder) if f.endswith('.psd')], desc="Converting PSD to PNG"):
+    for psd_file in tqdm(
+        [f for f in os.listdir(input_folder) if f.endswith('.psd')],
+            desc="Converting PSD to PNG"):
         convert_psd_to_png(os.path.join(input_folder, psd_file))
 
     # Convert PNG to PDF
     png_files = [f for f in os.listdir(input_folder) if f.endswith('.png')]
     for png_file in tqdm(png_files, desc="Converting PNG to PDF"):
-        png_to_pdf(os.path.join(input_folder, png_file), os.path.join(
-            "temp_pdf", f"{os.path.splitext(png_file)[0]}.pdf"), verso_image, split)
+        png_to_pdf(
+            os.path.join(input_folder, png_file),
+            os.path.join("temp_pdf", f"{os.path.splitext(png_file)[0]}.pdf"),
+            verso_image, split)
 
     # Copy existing PDFs to temp_pdf folder
     pdf_files = [f for f in os.listdir(input_folder) if f.endswith('.pdf')]

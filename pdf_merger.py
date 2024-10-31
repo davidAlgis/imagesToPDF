@@ -4,8 +4,10 @@ from tqdm import tqdm
 
 
 def merge_pdfs(input_folder, output_filename):
-    pdf_files = sorted([os.path.join(input_folder, f)
-                       for f in os.listdir(input_folder) if f.endswith('.pdf')])
+    pdf_files = sorted([
+        os.path.join(input_folder, f) for f in os.listdir(input_folder)
+        if f.endswith('.pdf')
+    ])
 
     if not pdf_files:
         print("No PDF files found in the specified directory.")
