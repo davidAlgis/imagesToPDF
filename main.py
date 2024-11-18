@@ -26,7 +26,7 @@ if __name__ == '__main__':
         type=str,
         default='.',
         help=
-        'Path of the input folder or file containing pictures or PDFs (default: current folder)'
+        'Path of the input folder containing pictures or PDFs (default: current folder)'
     )
     parser.add_argument(
         '-o',
@@ -47,7 +47,17 @@ if __name__ == '__main__':
         help=
         'Split each page in the PDF into two along the width (default is False)'
     )
+    parser.add_argument(
+        '-t',
+        '--test',
+        action='store_true',
+        help='Run a test to create a PDF from images in the test folder')
+    parser.add_argument('-d',
+                        '--dpi',
+                        type=int,
+                        default=96,
+                        help='DPI to use for PDF generation (default: 96 DPI)')
 
     args = parser.parse_args()
 
-    create_pdf(args.input, args.output, args.verso, args.split)
+    create_pdf(args.input, args.output, args.verso, args.split, args.dpi)

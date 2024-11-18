@@ -4,3 +4,5 @@ argparse
 tqdm
 PyPDF2
 psd_tools
+reportlab
+natsort
