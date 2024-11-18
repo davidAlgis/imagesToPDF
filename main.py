@@ -57,7 +57,14 @@ if __name__ == '__main__':
                         type=int,
                         default=96,
                         help='DPI to use for PDF generation (default: 96 DPI)')
+    parser.add_argument('-f',
+                        '--format',
+                        type=str,
+                        default='A4',
+                        choices=['A4', 'A5', 'Letter', 'Legal'],
+                        help='Page format to use for the PDF (default: A4)')
 
     args = parser.parse_args()
 
-    create_pdf(args.input, args.output, args.verso, args.split, args.dpi)
+    create_pdf(args.input, args.output, args.verso, args.split, args.dpi,
+               args.format)
