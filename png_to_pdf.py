@@ -1,11 +1,11 @@
-from fpdf import FPDF
 from PIL import Image
+from fpdf import FPDF
 
 
 class PDF(FPDF):
 
-    def __init__(self, orientation='P', unit='mm', format='A4'):
-        super().__init__(orientation, unit, format)
+    def __init__(self, orientation='P', unit='mm'):
+        super().__init__(orientation, unit)
         self.set_auto_page_break(0)
 
     def add_page_with_image(self, image_path, dpi):
@@ -20,9 +20,6 @@ class PDF(FPDF):
 
 def png_to_pdf(png_file, pdf_filename, verso_image=None, split=False, dpi=96):
     pdf = PDF()
-
-    def convert_dpi(size):
-        return size * 25.4 / dpi
 
     def split_image(image_path):
         img = Image.open(image_path)
