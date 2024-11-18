@@ -11,8 +11,7 @@ def create_pdf(input_folder,
                output_pdf,
                verso_image=None,
                split=False,
-               dpi=96,
-               page_format='A4'):
+               dpi=96):
     os.makedirs("temp_pdf", exist_ok=True)
 
     # Handle PSD files directly
@@ -25,7 +24,7 @@ def create_pdf(input_folder,
 
         # Convert TIFF to PDF
         pdf_file = tif_file.replace('.tiff', '.pdf')
-        tiff_to_pdf(tif_file, pdf_file, dpi, page_format)
+        tiff_to_pdf(tif_file, pdf_file, dpi)
 
     # Convert PNG to PDF
     png_files = [f for f in os.listdir(input_folder) if f.endswith('.png')]
@@ -33,7 +32,7 @@ def create_pdf(input_folder,
         png_to_pdf(
             os.path.join(input_folder, png_file),
             os.path.join("temp_pdf", f"{os.path.splitext(png_file)[0]}.pdf"),
-            verso_image, split, dpi, page_format)
+            verso_image, split, dpi)
 
     # Copy existing PDFs to temp_pdf folder
     pdf_files = [f for f in os.listdir(input_folder) if f.endswith('.pdf')]

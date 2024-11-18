@@ -18,13 +18,11 @@ class PDF(FPDF):
         self.image(image_path, 0, 0, page_width, page_height)
 
 
-def png_to_pdf(png_file,
-               pdf_filename,
-               verso_image=None,
-               split=False,
-               dpi=96,
-               page_format='A4'):
-    pdf = PDF(format=page_format)
+def png_to_pdf(png_file, pdf_filename, verso_image=None, split=False, dpi=96):
+    pdf = PDF()
+
+    def convert_dpi(size):
+        return size * 25.4 / dpi
 
     def split_image(image_path):
         img = Image.open(image_path)
