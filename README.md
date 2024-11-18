@@ -1,6 +1,6 @@
 # ImagesToPDF
 
-This Python script automatically generates a PDF file from PNG and PSD images in a specified directory. It includes an option to add a specific image (verso) after each PNG image, split images into two pages, define the page format (e.g., A4, A5), and merge all resulting PDFs into a single PDF.
+This Python script automatically generates a PDF file from PNG and PSD images in a specified directory. It includes an option to add a specific image (verso) after each PNG image, split images into two pages, and merge all resulting PDFs into a single PDF.
 
 ## Installation
 
@@ -28,8 +28,6 @@ python main.py [options]
 
 - `-s`, `--split <boolean>`: Split each page in the PDF into two along the width (default is False).
 
-- `-f`, `--format <format>`: Define the page format for the generated PDF. Options include `A4`, `A5`, `Letter`, and `Legal` (default is `A4`).
-
 - `-d`, `--dpi <integer>`: Specify the DPI (dots per inch) for the PDF generation. Higher values increase the resolution but also the file size (default is 96 DPI).
 
 - `-t`, `--test`: Run a test to create a PDF from images in the test folder.
@@ -54,12 +52,6 @@ To split each PNG image into two pages and save the resulting PDF:
 
 ```
 python main.py -i my_images -o my_document.pdf -s true
-```
-
-To specify the page format as `A5`:
-
-```
-python main.py -i my_images -o my_document.pdf -f A5
 ```
 
 To specify the DPI as 300 for high-resolution PDFs:
