@@ -1,19 +1,19 @@
-import os
 from fpdf import FPDF
 from PIL import Image
 
 
 class PDF(FPDF):
+
     def __init__(self, orientation='P', unit='mm', format='A4'):
         super().__init__(orientation, unit, format)
         self.set_auto_page_break(0)
 
-    def add_page_with_image(self, image_path):
+    def add_page_with_image(self, image_path, dpi):
         img = Image.open(image_path)
         img_width, img_height = img.size
-        # Convert pixel dimensions to mm (assuming 96 DPI)
-        page_width = img_width * 25.4 / 96
-        page_height = img_height * 25.4 / 96
+        # Convert pixel dimensions to mm
+        page_width = img_width * 25.4 / dpi
+        page_height = img_height * 25.4 / dpi
         self.add_page(format=(page_width, page_height))
         self.image(image_path, 0, 0, page_width, page_height)
 
@@ -48,4 +48,3 @@ def png_to_pdf(png_file, pdf_filename, verso_image=None, split=False, dpi=96):
         pdf.add_page_with_image(verso_image, dpi)
 
     pdf.output(pdf_filename)
-
