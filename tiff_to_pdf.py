@@ -19,9 +19,6 @@ class PDF(FPDF):
 
         # Calculate and print aspect ratio
         aspect_ratio = img_width / img_height
-        print(
-            f"Image: {image_path}, Aspect Ratio: {aspect_ratio:.2f}, Page Size: {page_width:.2f} x {page_height:.2f} mm"
-        )
 
 
 def tiff_to_pdf(tif_file, pdf_file, dpi=300):
