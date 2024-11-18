@@ -18,7 +18,7 @@ class PDF(FPDF):
         self.image(image_path, 0, 0, page_width, page_height)
 
 
-def png_to_pdf(png_file, pdf_filename, verso_image=None, split=False, dpi=96):
+def png_to_pdf(png_file, pdf_filename, verso_image=None, split=False, dpi=300):
     pdf = PDF()
 
     def split_image(image_path):

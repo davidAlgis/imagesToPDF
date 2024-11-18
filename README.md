@@ -28,7 +28,7 @@ python main.py [options]
 
 - `-s`, `--split <boolean>`: Split each page in the PDF into two along the width (default is False).
 
-- `-d`, `--dpi <integer>`: Specify the DPI (dots per inch) for the PDF generation. Higher values increase the resolution but also the file size (default is 96 DPI).
+- `-d`, `--dpi <integer>`: Specify the DPI (dots per inch) for the PDF generation. Higher values increase the resolution but also the file size (default is 300 DPI).
 
 - `-t`, `--test`: Run a test to create a PDF from images in the test folder.
 
@@ -54,10 +54,10 @@ To split each PNG image into two pages and save the resulting PDF:
 python main.py -i my_images -o my_document.pdf -s true
 ```
 
-To specify the DPI as 300 for high-resolution PDFs:
+To specify the DPI as 400 for high-resolution PDFs:
 
 ```
-python main.py -i my_images -o my_document.pdf -d 300
+python main.py -i my_images -o my_document.pdf -d 400
 ```
 
 ## Notes

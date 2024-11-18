@@ -38,7 +38,7 @@ def create_pdf(input_folder,
                output_pdf,
                verso_image=None,
                split=False,
-               dpi=96):
+               dpi=300):
     temp_dir = os.path.abspath("temp_pdf")
     os.makedirs(temp_dir, exist_ok=True)
 

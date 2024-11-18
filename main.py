@@ -52,11 +52,12 @@ if __name__ == '__main__':
         '--test',
         action='store_true',
         help='Run a test to create a PDF from images in the test folder')
-    parser.add_argument('-d',
-                        '--dpi',
-                        type=int,
-                        default=96,
-                        help='DPI to use for PDF generation (default: 96 DPI)')
+    parser.add_argument(
+        '-d',
+        '--dpi',
+        type=int,
+        default=300,
+        help='DPI to use for PDF generation (default: 300 DPI)')
 
     args = parser.parse_args()
 
