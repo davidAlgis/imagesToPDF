@@ -2,39 +2,33 @@ import os
 import shutil
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from tqdm import tqdm
-
-from psd_to_tiff import psd_to_tiff
-from jpg_to_tiff import jpeg_to_tiff  # Import the new JPEG to TIFF function
 from tiff_to_pdf import tiff_to_pdf
-from png_to_pdf import png_to_pdf
+from png_jpeg_to_pdf import image_to_pdf
 from pdf_merger import merge_pdfs
 
 
 def process_psd(psd_file, temp_dir, dpi):
     """Convert PSD to TIFF and then to PDF."""
+    from psd_tools import PSDImage
     tif_file = os.path.join(
         temp_dir, f"{os.path.splitext(os.path.basename(psd_file))[0]}.tiff")
     pdf_file = tif_file.replace('.tiff', '.pdf')
-    psd_to_tiff(psd_file, tif_file)
-    tiff_to_pdf(tif_file, pdf_file, dpi)
+
+    # Convert PSD to TIFF
+    psd = PSDImage.open(psd_file)
+    psd.composite().save(tif_file, format='TIFF')
+
+    # Convert TIFF to PDF
+    tiff_to_pdf(tif_file, pdf_file, dpi=dpi)
+    os.remove(tif_file)  # Clean up intermediate TIFF
     return pdf_file
 
 
-def process_jpeg(jpeg_file, temp_dir, dpi):
-    """Convert JPEG to TIFF and then to PDF."""
-    tif_file = os.path.join(
-        temp_dir, f"{os.path.splitext(os.path.basename(jpeg_file))[0]}.tiff")
-    pdf_file = tif_file.replace('.tiff', '.pdf')
-    jpeg_to_tiff(jpeg_file, tif_file)
-    tiff_to_pdf(tif_file, pdf_file, dpi)
-    return pdf_file
-
-
-def process_png(png_file, temp_dir, verso_image, split, dpi):
-    """Convert PNG to PDF."""
+def process_image(image_file, temp_dir, verso_image, split, dpi):
+    """Convert an image file (JPEG or PNG) to PDF."""
     pdf_file = os.path.join(
-        temp_dir, f"{os.path.splitext(os.path.basename(png_file))[0]}.pdf")
-    png_to_pdf(png_file, pdf_file, verso_image, split, dpi)
+        temp_dir, f"{os.path.splitext(os.path.basename(image_file))[0]}.pdf")
+    image_to_pdf(image_file, pdf_file, verso_image, split, dpi)
     return pdf_file
 
 
@@ -69,14 +63,13 @@ def create_pdf(input_paths,
         ]
 
     psd_files = [f for f in input_paths if f.endswith('.psd')]
-    jpeg_files = [
-        f for f in input_paths if f.lower().endswith(('.jpg', '.jpeg'))
+    image_files = [
+        f for f in input_paths if f.lower().endswith(('.jpg', '.jpeg', '.png'))
     ]
-    png_files = [f for f in input_paths if f.endswith('.png')]
     pdf_files = [f for f in input_paths if f.endswith('.pdf')]
 
     # Check if there are any files to process
-    if not psd_files and not jpeg_files and not png_files and not pdf_files:
+    if not psd_files and not image_files and not pdf_files:
         print("No valid files (PSD, JPEG, PNG, or PDF) found to process.")
         return
 
@@ -87,16 +80,11 @@ def create_pdf(input_paths,
         for psd_file in psd_files:
             tasks.append(executor.submit(process_psd, psd_file, temp_dir, dpi))
 
-        # Submit tasks for JPEG processing
-        for jpeg_file in jpeg_files:
+        # Submit tasks for image (JPEG/PNG) processing
+        for image_file in image_files:
             tasks.append(
-                executor.submit(process_jpeg, jpeg_file, temp_dir, dpi))
-
-        # Submit tasks for PNG processing
-        for png_file in png_files:
-            tasks.append(
-                executor.submit(process_png, png_file, temp_dir, verso_image,
-                                split, dpi))
+                executor.submit(process_image, image_file, temp_dir,
+                                verso_image, split, dpi))
 
         # Submit tasks for copying PDFs
         for pdf_file in pdf_files:
