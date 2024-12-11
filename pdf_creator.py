@@ -4,6 +4,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from tqdm import tqdm
 
 from psd_to_tiff import psd_to_tiff
+from jpg_to_tiff import jpeg_to_tiff  # Import the new JPEG to TIFF function
 from tiff_to_pdf import tiff_to_pdf
 from png_to_pdf import png_to_pdf
 from pdf_merger import merge_pdfs
@@ -15,6 +16,16 @@ def process_psd(psd_file, temp_dir, dpi):
         temp_dir, f"{os.path.splitext(os.path.basename(psd_file))[0]}.tiff")
     pdf_file = tif_file.replace('.tiff', '.pdf')
     psd_to_tiff(psd_file, tif_file)
+    tiff_to_pdf(tif_file, pdf_file, dpi)
+    return pdf_file
+
+
+def process_jpeg(jpeg_file, temp_dir, dpi):
+    """Convert JPEG to TIFF and then to PDF."""
+    tif_file = os.path.join(
+        temp_dir, f"{os.path.splitext(os.path.basename(jpeg_file))[0]}.tiff")
+    pdf_file = tif_file.replace('.tiff', '.pdf')
+    jpeg_to_tiff(jpeg_file, tif_file)
     tiff_to_pdf(tif_file, pdf_file, dpi)
     return pdf_file
 
@@ -34,27 +45,40 @@ def copy_pdf(pdf_file, temp_dir):
     return dest_file
 
 
-def create_pdf(input_folder,
+def create_pdf(input_paths,
                output_pdf,
                verso_image=None,
                split=False,
                dpi=300):
+    """
+    Create a PDF from input files or a folder.
+
+    :param input_paths: List of input file paths or a folder path
+    :param output_pdf: Path to the output PDF
+    :param verso_image: Optional verso image
+    :param split: Split PDF pages
+    :param dpi: Resolution for PDF creation
+    """
     temp_dir = os.path.abspath("temp_pdf")
     os.makedirs(temp_dir, exist_ok=True)
 
-    input_folder = os.path.abspath(input_folder)
-    psd_files = [
-        os.path.join(input_folder, f) for f in os.listdir(input_folder)
-        if f.endswith('.psd')
+    if isinstance(input_paths, str) and os.path.isdir(input_paths):
+        # Handle folder input
+        input_paths = [
+            os.path.join(input_paths, f) for f in os.listdir(input_paths)
+        ]
+
+    psd_files = [f for f in input_paths if f.endswith('.psd')]
+    jpeg_files = [
+        f for f in input_paths if f.lower().endswith(('.jpg', '.jpeg'))
     ]
-    png_files = [
-        os.path.join(input_folder, f) for f in os.listdir(input_folder)
-        if f.endswith('.png')
-    ]
-    pdf_files = [
-        os.path.join(input_folder, f) for f in os.listdir(input_folder)
-        if f.endswith('.pdf')
-    ]
+    png_files = [f for f in input_paths if f.endswith('.png')]
+    pdf_files = [f for f in input_paths if f.endswith('.pdf')]
+
+    # Check if there are any files to process
+    if not psd_files and not jpeg_files and not png_files and not pdf_files:
+        print("No valid files (PSD, JPEG, PNG, or PDF) found to process.")
+        return
 
     tasks = []
 
@@ -62,6 +86,11 @@ def create_pdf(input_folder,
         # Submit tasks for PSD processing
         for psd_file in psd_files:
             tasks.append(executor.submit(process_psd, psd_file, temp_dir, dpi))
+
+        # Submit tasks for JPEG processing
+        for jpeg_file in jpeg_files:
+            tasks.append(
+                executor.submit(process_jpeg, jpeg_file, temp_dir, dpi))
 
         # Submit tasks for PNG processing
         for png_file in png_files:

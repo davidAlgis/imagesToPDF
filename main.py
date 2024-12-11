@@ -1,3 +1,4 @@
+import os
 import argparse
 from pdf_creator import create_pdf
 
@@ -24,10 +25,8 @@ if __name__ == '__main__':
         '-i',
         '--input',
         type=str,
-        default='.',
-        help=
-        'Path of the input folder containing pictures or PDFs (default: current folder)'
-    )
+        required=True,
+        help='Path to an input file or folder containing pictures or PDFs')
     parser.add_argument(
         '-o',
         '--output',
@@ -60,5 +59,16 @@ if __name__ == '__main__':
         help='DPI to use for PDF generation (default: 300 DPI)')
 
     args = parser.parse_args()
+    input_path = os.path.abspath(args.input)
 
-    create_pdf(args.input, args.output, args.verso, args.split, args.dpi)
+    # Check if input is a file or folder
+    if not os.path.exists(input_path):
+        print(f"Input path {input_path} does not exist.")
+    elif os.path.isfile(input_path):
+        # If input is a file, process it directly
+        create_pdf([input_path], args.output, args.verso, args.split, args.dpi)
+    elif os.path.isdir(input_path):
+        # If input is a directory, pass it to create_pdf
+        create_pdf(input_path, args.output, args.verso, args.split, args.dpi)
+    else:
+        print(f"Invalid input path: {input_path}")
