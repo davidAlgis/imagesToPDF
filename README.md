@@ -1,6 +1,6 @@
 # ImagesToPDF
 
-This Python script automatically generates a PDF file from PNG and PSD images in a specified directory. It includes an option to add a specific image (verso) after each PNG image, split images into two pages, and merge all resulting PDFs into a single PDF.
+This Python script automatically generates a PDF file from JPEG, PNG and PSD images in a specified directory. It includes an option to add a specific image (verso) after each PNG image, split images into two pages, and merge all resulting PDFs into a single PDF.
 
 ## Installation
 
@@ -62,6 +62,6 @@ python main.py -i my_images -o my_document.pdf -d 400
 
 ## Notes
 
-- Supported input formats: PNG and PSD.
+- Supported input formats: JPEG, PNG and PSD.
 - The script automatically converts PSD files to TIFF while preserving the CMYK color profile and then to PDF.
 - Existing PDFs in the input folder are merged into the output PDF without modification.
